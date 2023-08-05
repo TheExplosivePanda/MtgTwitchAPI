@@ -38,6 +38,7 @@ namespace TwitchAPI
             ChannelName = twitchConfig.Bind<string>("TwitchAPI:", "ChannelName", " ", "The name of your channel");
             ETGModConsole.Commands.AddGroup("twitchapi:toggle", new Action<string[]>(this.ToggleIntegration));
             ETGModConsole.Commands.AddGroup("twitchapi:reload", new Action<string[]>(this.Reload));
+            ETGModConsole.Commands.AddGroup("twitchapi:setchannel", new Action<string[]>(this.SetChannelName));
             Log("Twitch API " + VERSION + " loaded successfully. Type \"twitchapi:toggle\" to turn it on", TEXT_COLOR);
         }
 
@@ -48,7 +49,19 @@ namespace TwitchAPI
         public void Reload(string[] args)
         {
             Config.Reload();
-            ChannelName = twitchConfig.Bind<string>("TwitchAPI:", "ChannelName", " ", "The name of your channel");
+        }
+        public void SetChannelName(string[] args)
+        {
+            
+            if(args==null || args.Length==0 || args[0].IsNullOrWhiteSpace())
+            {
+                Log("you must enter a channel name");
+            }
+            else
+            {
+                ChannelName.Value = args[0];
+                Config.Reload();
+            }
         }
         //mostly stolen from kyle, but basically tries to load info from file and start listening to chat, or stop listening to chat to disable twitch mod. thanks kyle (:
         public void ToggleIntegration(string[] args)
@@ -80,8 +93,10 @@ namespace TwitchAPI
                 else
                 {
                     Log("Seems as though The config file has not been filled yet.");
-                    Log("You may minimize the game, fill the config file and then type \"twitchapi:reload\" in the console to reload the config file");
-                    Log("after reloading the config, try toggling twitch integration on again");
+                    Log("You may set your channel name by typing in the console \"twitchapi:setchannel <channelname>\" ");
+                    Log("Alternatively you may edit your config file via the mod manage and then type in console \"twitchapi:reload\"");
+                    Log("You should only need to do either of these actions once, unless you want to switch the channel youre joining");
+                    Log("after setting the config, try toggling twitch mode again");
                 }
             }
             else
