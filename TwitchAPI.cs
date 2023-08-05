@@ -18,7 +18,7 @@ namespace TwitchAPI
     public class TwitchAPI : BaseUnityPlugin
     {
         public const string GUID = "panda.etg.twitchAPI";
-        public const string NAME = "twitcheroos";
+        public const string NAME = "TWITCHAPI";
         public const string VERSION = "1.0.0";
         public const string TEXT_COLOR = "#6441a5";
 
