@@ -36,10 +36,10 @@ namespace TwitchAPI
         {
             twitchConfig = base.Config;
             ChannelName = twitchConfig.Bind<string>("TwitchAPI:", "ChannelName", " ", "The name of your channel");
-            ETGModConsole.Commands.AddGroup("twitchapi:toggle", new Action<string[]>(this.ToggleIntegration));
-            ETGModConsole.Commands.AddGroup("twitchapi:reload", new Action<string[]>(this.Reload));
-            ETGModConsole.Commands.AddGroup("twitchapi:setchannel", new Action<string[]>(this.SetChannelName));
-            Log("Twitch API " + VERSION + " loaded successfully. Type \"twitchapi:toggle\" to turn it on", TEXT_COLOR);
+            ETGModConsole.Commands.AddGroup("tapi:toggle", new Action<string[]>(this.ToggleIntegration));
+            ETGModConsole.Commands.AddGroup("tapi:reload", new Action<string[]>(this.Reload));
+            ETGModConsole.Commands.AddGroup("tapi:setchannel", new Action<string[]>(this.SetChannelName));
+            Log("Twitch API " + VERSION + " loaded successfully. Type \"tapi:toggle\" to turn it on", TEXT_COLOR);
         }
 
         public static void Log(string text, string color = "#FFFFFF")
@@ -93,8 +93,8 @@ namespace TwitchAPI
                 else
                 {
                     Log("Seems as though The config file has not been filled yet.");
-                    Log("You may set your channel name by typing in the console \"twitchapi:setchannel <channelname>\" ");
-                    Log("Alternatively you may edit your config file via the mod manage and then type in console \"twitchapi:reload\"");
+                    Log("You can set your channel name by typing in the console \"tapi:setchannel <channelname>\" ");
+                    Log("Alternatively you can edit your config file via the mod manage and then type in console \"tapi:reload\"");
                     Log("You should only need to do either of these actions once, unless you want to switch the channel youre joining");
                     Log("after setting the config, try toggling twitch mode again");
                 }
