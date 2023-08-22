@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Polls\MainPollController.cs" />
+    <Compile Include="Polls\Poll.cs" />
+    <Compile Include="Polls\PollUIController.cs" />
     <Compile Include="TwitchIRC-master\TwitchIRC-master\TwitchIRC\ChatListener.cs" />
     <Compile Include="TwitchIRC-master\TwitchIRC-master\TwitchIRC\Error.cs" />
     <Compile Include="TwitchIRC-master\TwitchIRC-master\TwitchIRC\IrcClient.cs" />

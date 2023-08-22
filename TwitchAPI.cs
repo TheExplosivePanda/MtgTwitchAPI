@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using TwitchIRC;
 using UnityEngine;
+using TwitchAPI.Polls;
 
 namespace TwitchAPI
 {
@@ -39,9 +40,15 @@ namespace TwitchAPI
             ETGModConsole.Commands.AddGroup("tapi:toggle", new Action<string[]>(this.ToggleIntegration));
             ETGModConsole.Commands.AddGroup("tapi:reload", new Action<string[]>(this.Reload));
             ETGModConsole.Commands.AddGroup("tapi:setchannel", new Action<string[]>(this.SetChannelName));
+            ETGModConsole.Commands.AddGroup("tapi:tapi", new Action<string[]>(this.DebugTapi));
+            GameManager.Instance.gameObject.AddComponent<PollUIController>();
+            
             Log("Twitch API " + VERSION + " loaded successfully. Type \"tapi:toggle\" to turn it on", TEXT_COLOR);
         }
-
+        public void DebugTapi(string[] args)
+        {
+            ui.panelOut = !ui.panelOut;
+        }
         public static void Log(string text, string color = "#FFFFFF")
         {
             ETGModConsole.Log($"<color={color}>{text}</color>");
@@ -50,6 +57,7 @@ namespace TwitchAPI
         {
             Config.Reload();
         }
+
         public void SetChannelName(string[] args)
         {
             
@@ -79,7 +87,7 @@ namespace TwitchAPI
                     {
                         TwitchAPI.listener = new ChatListener(anonLoginUser, randomLoginString, ChannelName.Value);
                         TwitchAPI.listener.Connect();
-                        TwitchAPI.listener.OnChatMessage += ActivateGlobalDelegate;
+                        TwitchAPI.listener.OnChatMessage += ActivateGlobalOnChatMessageDelegate;
                         TwitchAPI.listener.StartListening();
                         TwitchAPI.integrationEnabled = true;
                     }
@@ -88,7 +96,7 @@ namespace TwitchAPI
                         listener.Connect();
                         TwitchAPI.listener.StartListening();
                         TwitchAPI.integrationEnabled = true;
-                    }                  
+                    }         
                 }
                 else
                 {
@@ -133,7 +141,7 @@ namespace TwitchAPI
 
         public static ChatListener.ChatDelegate GlobalChatDelegate;
 
-        static void ActivateGlobalDelegate(string user, string message, string channel)
+        static void ActivateGlobalOnChatMessageDelegate(string user, string message, string channel)
         {
             GlobalChatDelegate(user, message, channel);
         }
@@ -142,6 +150,9 @@ namespace TwitchAPI
         public static ChatListener listener = null;
 
         public static TwitchAPI instance;
+
+        public static PollUIController ui = null;
+
         static string logFilePath;
     
     }
