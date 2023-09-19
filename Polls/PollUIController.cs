@@ -13,7 +13,6 @@ namespace TwitchAPI.Polls
     {
         public void Start()
         {
-            ETGModConsole.Log("started ui poll setup");
             this.panel = new SGroup();
             this.border = new SRect(new Color(1f, 1f, 1f, 1f));
             this.itemLabel = new SLabel("");
@@ -103,7 +102,7 @@ namespace TwitchAPI.Polls
             this.panel.Position.y = Mathf.Lerp(startY, extendedY,t + tOffset);
         }
 
-        public void SetOptions(string[] options, string title = null)
+        public void SetOptions(VoteOption[] options, string title = null)
         {
             bool flag = options == null;
             if (!flag)
@@ -116,13 +115,13 @@ namespace TwitchAPI.Polls
                 text += string.Format(" Vote by typing 1-{0}:\n",options.Length);
                 for (int i = 0; i < options.Length; i++)
                 {
-                    text += string.Format(" {0}) {1} \n", i + 1, options[i]);
+                    text += string.Format(" {0}) {1} \n", i + 1, options[i].displayText);
                 }
                 this.itemLabel.Text = text;
             }
         }
 
-        public void UpdateVotes(int[] votes)
+        public void UpdateVotes(VoteOption[] votes)
         {
             bool flag = votes == null;
             if (!flag)
@@ -130,7 +129,7 @@ namespace TwitchAPI.Polls
                 string text = "\n";
                 for (int i = 0; i < votes.Length; i++)
                 {
-                    text += string.Format("[{0}] .\n", votes[i]);
+                    text += string.Format("[{0}] .\n", votes[i].votes);
                 }
                 this.votesLabel.Text = text;
             }

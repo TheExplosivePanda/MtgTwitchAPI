@@ -9,7 +9,7 @@ using BepInEx;
 
 namespace TwitchAPI.Polls
 {
-    internal class MainPollController : MonoBehaviour
+    public class MainPollController : MonoBehaviour
     {       
         public static MainPollController instance;
 
@@ -25,7 +25,7 @@ namespace TwitchAPI.Polls
 
         void Update()
         {
-            if (pollQueue.Count >= 0 && downTimer <= 0 && !isPollActive && TwitchAPI.integrationEnabled)
+            if (pollQueue.Count > 0 && downTimer <= 0 && !isPollActive && TwitchAPI.integrationEnabled && !GameManager.Instance.IsFoyer && GameManager.Instance.PrimaryPlayer)
             {
                 ActivatePoll(pollQueue.Dequeue());
             }
@@ -40,6 +40,7 @@ namespace TwitchAPI.Polls
                 {
                     pollTimerInt = (int)Math.Floor(pollTimer) + 1;
                     TwitchAPI.ui.UpdateTimer(pollTimerInt, activePoll.time);
+                    
                 }
                 if (pollTimer <= 0) 
                 {
@@ -49,18 +50,20 @@ namespace TwitchAPI.Polls
         }
         void Start()
         {
+            instance = this;
             TwitchAPI.GlobalChatDelegate += ChatListener;
         }
 
         void ChatListener(string user,string message,string channel)
         {
-            if (!isPollActive) 
+            if (isPollActive) 
             {
                 int voteIndex = 0;
                 if(int.TryParse(message, out voteIndex) && !Voters.ContainsKey(user))
                 {
                     activePoll.options[voteIndex - 1].votes++;
                     Voters.Add(user, message);
+                    TwitchAPI.ui.UpdateVotes(activePoll.options.ToArray());
                 }
             }
         }
@@ -70,14 +73,11 @@ namespace TwitchAPI.Polls
             activePoll = poll;
             pollTimerInt = poll.time;
             pollTimer = poll.time;
-
-            TwitchAPI.ui.SetOptions(poll.options.ToArray());
-            TwitchAPI.ui.SetOptions(poll.options.ToArray());
+            isPollActive = true;
+            TwitchAPI.ui.SetOptions(poll.options.ToArray(),poll.title);
+            TwitchAPI.ui.UpdateVotes(poll.options.ToArray());
             TwitchAPI.ui.UpdateTimer(pollTimerInt, poll.time);
             TwitchAPI.ui.panelOut = true;
-
-            
-
         }
 
         void ConcludePoll(Poll poll)
@@ -86,6 +86,7 @@ namespace TwitchAPI.Polls
             pollTimerInt = 0;
             pollTimer = 0;
             downTimer = downTime;
+            isPollActive = false;
             TwitchAPI.ui.panelOut = false;
 
             poll.callBack(poll);
@@ -93,6 +94,7 @@ namespace TwitchAPI.Polls
 
         public bool SubmitPoll(Poll poll)
         {
+            if (!TwitchAPI.integrationEnabled) return false;
             if(!VerifyPoll(poll)) return false;
             Poll poll2 = new Poll(poll);
             if (!SanitizeInpuPoll(poll2)) return false;
@@ -102,7 +104,7 @@ namespace TwitchAPI.Polls
 
         private bool VerifyPoll(Poll poll) 
         {
-            if (poll ==null) return false;
+            if (poll == null) return false;
             if (poll.callBack == null) return false;
             if (poll.options == null || poll.options.Count <= 0)
                 return false;
@@ -124,9 +126,10 @@ namespace TwitchAPI.Polls
             foreach (var option in poll.options) 
             {
                 option.displayText.Replace(Environment.NewLine, "");
-                if(option.displayText.Length >= 50)
+                if (option.displayText.Length >= 50)
+                {
                     option.displayText = option.displayText.Substring(0, 50);
-                TwitchAPI.ui.UpdateVotes(activePoll.options.ToArray());
+                }
             }
             return true;
         }

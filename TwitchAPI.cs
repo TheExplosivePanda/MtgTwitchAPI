@@ -42,7 +42,8 @@ namespace TwitchAPI
             ETGModConsole.Commands.AddGroup("tapi:setchannel", new Action<string[]>(this.SetChannelName));
             ETGModConsole.Commands.AddGroup("tapi:tapi", new Action<string[]>(this.DebugTapi));
             GameManager.Instance.gameObject.AddComponent<PollUIController>();
-            
+            GameManager.Instance.gameObject.AddComponent<MainPollController>();
+
             Log("Twitch API " + VERSION + " loaded successfully. Type \"tapi:toggle\" to turn it on", TEXT_COLOR);
         }
         public void DebugTapi(string[] args)
@@ -71,6 +72,7 @@ namespace TwitchAPI
                 Config.Reload();
             }
         }
+        
         //mostly stolen from kyle, but basically tries to load info from file and start listening to chat, or stop listening to chat to disable twitch mod. thanks kyle (:
         public void ToggleIntegration(string[] args)
         {
@@ -78,11 +80,6 @@ namespace TwitchAPI
             {
                 if (!ChannelName.Value.IsNullOrWhiteSpace())
                 {
-                    if (TwitchAPI.listener != null && TwitchAPI.listener.Connected)
-                    {
-                        TwitchAPI.listener.StopListening();
-                        TwitchAPI.integrationEnabled = false;
-                    }
                     if (TwitchAPI.listener == null)
                     {
                         TwitchAPI.listener = new ChatListener(anonLoginUser, randomLoginString, ChannelName.Value);
@@ -136,7 +133,7 @@ namespace TwitchAPI
         {
             string color = TwitchAPI.integrationEnabled ? "<color=#00FF00FF>" : "<color=#FF0000FF>";
             string text = TwitchAPI.integrationEnabled ? "enabled" : "disabled";
-            ETGModConsole.Log("EnemyRenamer Twitch Mode " + color + text + "</color>", false);
+            ETGModConsole.Log("TwitchAPI " + color + text + "</color>", false);
         }
 
         public static ChatListener.ChatDelegate GlobalChatDelegate;

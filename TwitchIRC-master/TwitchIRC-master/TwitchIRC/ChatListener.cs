@@ -158,6 +158,8 @@ namespace TwitchIRC
             listening = false;
         }
 
+     
+
         /// <summary>
         /// Dangerously stops the listening thread. 
         /// </summary>

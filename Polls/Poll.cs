@@ -21,15 +21,17 @@ namespace TwitchAPI.Polls
                 this.options = new List<VoteOption>(options);
             this.name = name;
             this.callBack = callBack;
+            this.title = title;
         }
 
         public Poll(Poll poll)
         {
             this.time = poll.time;
             this.options = new List<VoteOption>();
-            if (poll.options != null)
-                foreach (var option in poll.options)
-                    this.options.Add(new VoteOption(option));
+            foreach (var option in poll.options)
+            {
+                this.options.Add(new VoteOption(option));
+            }
             
             this.name = poll.name;
             this.callBack = poll.callBack;
@@ -37,7 +39,7 @@ namespace TwitchAPI.Polls
 
         public int time;
         public string name;
-        private string title;
+        public string title;
         public List<VoteOption> options;
         public Action<Poll> callBack = null;
     }
