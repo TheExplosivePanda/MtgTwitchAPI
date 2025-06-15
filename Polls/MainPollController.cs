@@ -88,8 +88,51 @@ namespace TwitchAPI.Polls
             downTimer = downTime;
             isPollActive = false;
             TwitchAPI.ui.panelOut = false;
+            Voters.Clear();
+            List<VoteOption> winningVotes = FindWinningVotes(poll);
+            ResolvePoll(poll, winningVotes);
+        }
+        List<VoteOption> FindWinningVotes(Poll poll)
+        {
+            List <VoteOption> winningVotes = new List<VoteOption>();
+            int highestVote = 0;
+            for (int i = 0; i < poll.options.Count; i++)
+            {
+                if (poll.options[i].votes > highestVote)
+                    highestVote = poll.options[i].votes;
+            }
+            for (int i = 0; i < poll.options.Count; i++)
+            {
+                if (poll.options[i].votes == highestVote)
+                    winningVotes.Add(poll.options[i]);
+            }
+            return winningVotes;
 
-            poll.callBack(poll);
+        }
+        void ResolvePoll(Poll poll,List<VoteOption> winningVotes)
+        {
+
+            switch(poll.resolveSettings)
+            {
+                case resolvePollOptions.mainOnly:
+                    poll.CallBack(); break;
+                case resolvePollOptions.randomIfTie:
+                    poll.CallBack();
+                    winningVotes[UnityEngine.Random.Range(0, winningVotes.Count)].CallBack();
+                    break;
+                case resolvePollOptions.noneIfTie:
+                    poll.CallBack();
+                    if(winningVotes.Count == 1)
+                        winningVotes[0].CallBack(); break;
+                case resolvePollOptions.AllIfTie:
+                    poll.CallBack();
+                    foreach (VoteOption vote in winningVotes)
+                        vote.CallBack();
+                    break;
+                default: poll.CallBack(); break;
+            }
+                
+
         }
 
         public bool SubmitPoll(Poll poll)
@@ -121,8 +164,8 @@ namespace TwitchAPI.Polls
             if (!VerifyPoll(poll)) return false;
             if (poll.time > 120)
                 poll.time = 120;
-            if (poll.time < 30)
-                poll.time = 30;
+            if (poll.time < 1)
+                poll.time = 1;
             foreach (var option in poll.options) 
             {
                 option.displayText.Replace(Environment.NewLine, "");
@@ -133,5 +176,6 @@ namespace TwitchAPI.Polls
             }
             return true;
         }
+
     }
 }

@@ -56,8 +56,10 @@ namespace TwitchIRC
         {
             try
             {
-                irc = new IrcClient("irc.twitch.tv", 6667, nick, oauth); //establish connection
-                irc.JoinChannel(this.channel);
+                if (!Connected) { 
+                    irc = new IrcClient("irc.twitch.tv", 6667, nick, oauth); //establish connection
+                    irc.JoinChannel(this.channel);
+                }
                 return irc.Connected;
             }
             catch (Exception e)
@@ -73,9 +75,9 @@ namespace TwitchIRC
             //irc messages come in the format ":nickname!username@nickname.tmi.twitch.tv PRIVMSG #channelName :message"
             while (listening)
             {
-                
                 if (irc.Connected)
                 {
+                    
                     HandlePings();
 
                     string ircMessage = irc.ReadMessage();
@@ -137,9 +139,8 @@ namespace TwitchIRC
         /// </summary>
         public void StartListening()
         {
-            if (readThread != null)
+            if (readThread != null && readThread.ThreadState == System.Threading.ThreadState.Unstarted)
             {
-   
                 readThread.Start();
             }
            

@@ -20,12 +20,13 @@ namespace TwitchAPI
     {
         public const string GUID = "panda.etg.twitchAPI";
         public const string NAME = "TWITCHAPI";
-        public const string VERSION = "1.0.0";
+        public const string VERSION = "1.1.0";
         public const string TEXT_COLOR = "#6441a5";
 
         public void Start()
         {
             ETGModMainBehaviour.WaitForGameManagerStart(GMStart);
+            instance = this;
         }
 
         static ConfigFile twitchConfig;
@@ -37,10 +38,11 @@ namespace TwitchAPI
         {
             twitchConfig = base.Config;
             ChannelName = twitchConfig.Bind<string>("TwitchAPI:", "ChannelName", " ", "The name of your channel");
+            ETGModConsole.Commands.AddGroup("tapi:start", new Action<string[]>(this.Initilize));
             ETGModConsole.Commands.AddGroup("tapi:toggle", new Action<string[]>(this.ToggleIntegration));
             ETGModConsole.Commands.AddGroup("tapi:reload", new Action<string[]>(this.Reload));
             ETGModConsole.Commands.AddGroup("tapi:setchannel", new Action<string[]>(this.SetChannelName));
-            ETGModConsole.Commands.AddGroup("tapi:tapi", new Action<string[]>(this.DebugTapi));
+            //ETGModConsole.Commands.AddGroup("tapi:tapi", new Action<string[]>(this.DebugTapi));
             GameManager.Instance.gameObject.AddComponent<PollUIController>();
             GameManager.Instance.gameObject.AddComponent<MainPollController>();
 
@@ -70,54 +72,57 @@ namespace TwitchAPI
             {
                 ChannelName.Value = args[0];
                 Config.Reload();
+                Log("channel name has been set to:" + ChannelName.Value);
             }
         }
-        
-        //mostly stolen from kyle, but basically tries to load info from file and start listening to chat, or stop listening to chat to disable twitch mod. thanks kyle (:
-        public void ToggleIntegration(string[] args)
+        public void Initilize(string[] args)
         {
-            if (!TwitchAPI.integrationEnabled)
+            if (!ChannelName.Value.IsNullOrWhiteSpace())
             {
-                if (!ChannelName.Value.IsNullOrWhiteSpace())
+                if (TwitchAPI.listener == null)
                 {
-                    if (TwitchAPI.listener == null)
-                    {
-                        TwitchAPI.listener = new ChatListener(anonLoginUser, randomLoginString, ChannelName.Value);
-                        TwitchAPI.listener.Connect();
-                        TwitchAPI.listener.OnChatMessage += ActivateGlobalOnChatMessageDelegate;
-                        TwitchAPI.listener.StartListening();
-                        TwitchAPI.integrationEnabled = true;
-                    }
-                    else if (!listener.Connected)
-                    {
-                        listener.Connect();
-                        TwitchAPI.listener.StartListening();
-                        TwitchAPI.integrationEnabled = true;
-                    }         
+                    TwitchAPI.listener = new ChatListener(anonLoginUser, randomLoginString, ChannelName.Value);
+                    TwitchAPI.listener.Connect();
+                    TwitchAPI.listener.OnChatMessage += ActivateGlobalOnChatMessageDelegate;
+                    TwitchAPI.listener.StartListening();
+                }
+                else if (!listener.Connected)
+                {
+                    listener.Connect();
+                }
+                if (TwitchAPI.listener.Connected) 
+                {
+                    TwitchAPI.integrationEnabled = true;
                 }
                 else
                 {
-                    Log("Seems as though The config file has not been filled yet.");
-                    Log("You can set your channel name by typing in the console \"tapi:setchannel <channelname>\" ");
-                    Log("Alternatively you can edit your config file via the mod manage and then type in console \"tapi:reload\"");
-                    Log("You should only need to do either of these actions once, unless you want to switch the channel youre joining");
-                    Log("after setting the config, try toggling twitch mode again");
+                    ETGModConsole.Log("TwitchAPI had trouble connecting to twitch. Please check the channel name is set properly.");
                 }
+                
             }
             else
             {
-                this.Disable();
+                Log("Seems as though The config file has not been filled yet.");
+                Log("You can set your channel name by typing in the console \"tapi:setchannel <channelname>\" ");
+                Log("Alternatively you can edit your config file via the mod manage and then type in console \"tapi:reload\"");
+                Log("You should only need to do either of these actions once, unless you want to switch the channel youre joining");
+                Log("after setting the config, try starting twitch mode again");
             }
+
             TwitchAPI.LogActiveStatus();
         }
-        //stops listening to irc responses from twitch. Related events will not trigger anymore
-        public void Disable()
+        //mostly stolen from kyle, but basically tries to load info from file and start listening to chat, or stop listening to chat to disable twitch mod. thanks kyle (:
+        public void ToggleIntegration(string[] args)
         {
-            if (TwitchAPI.listener != null)
+            if (!TwitchAPI.integrationEnabled && listener!=null && listener.Connected)
             {
-                TwitchAPI.listener.StopListening();
+                TwitchAPI.integrationEnabled = true;
             }
-            TwitchAPI.integrationEnabled = false;
+            else
+            {
+                TwitchAPI.integrationEnabled = false;
+            }
+            TwitchAPI.LogActiveStatus();
         }
 
         void OnApplicationQuit()
@@ -140,9 +145,11 @@ namespace TwitchAPI
 
         static void ActivateGlobalOnChatMessageDelegate(string user, string message, string channel)
         {
-            GlobalChatDelegate(user, message, channel);
+            if(integrationEnabled) 
+                GlobalChatDelegate(user, message, channel);
         }
         public static bool integrationEnabled = false;
+        public static bool hasBeenStarted = false;
 
         public static ChatListener listener = null;
 
