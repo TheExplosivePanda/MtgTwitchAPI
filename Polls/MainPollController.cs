@@ -25,7 +25,7 @@ namespace TwitchAPI.Polls
 
         void Update()
         {
-            if (pollQueue.Count > 0 && downTimer <= 0 && !isPollActive && TwitchAPI.integrationEnabled && !GameManager.Instance.IsFoyer && GameManager.Instance.PrimaryPlayer)
+            if (pollQueue.Count > 0 && downTimer <= 0 && !isPollActive && TwitchAPI.IntegrationEnabled && !GameManager.Instance.IsFoyer && GameManager.Instance.PrimaryPlayer)
             {
                 ActivatePoll(pollQueue.Dequeue());
             }
@@ -137,7 +137,7 @@ namespace TwitchAPI.Polls
 
         public bool SubmitPoll(Poll poll)
         {
-            if (!TwitchAPI.integrationEnabled) return false;
+            if (!TwitchAPI.IntegrationEnabled) return false;
             if(!VerifyPoll(poll)) return false;
             Poll poll2 = new Poll(poll);
             if (!SanitizeInpuPoll(poll2)) return false;

@@ -92,7 +92,7 @@ namespace TwitchAPI
                 }
                 if (TwitchAPI.listener.Connected) 
                 {
-                    TwitchAPI.integrationEnabled = true;
+                    TwitchAPI.IntegrationEnabled = true;
                 }
                 else
                 {
@@ -114,13 +114,13 @@ namespace TwitchAPI
         //mostly stolen from kyle, but basically tries to load info from file and start listening to chat, or stop listening to chat to disable twitch mod. thanks kyle (:
         public void ToggleIntegration(string[] args)
         {
-            if (!TwitchAPI.integrationEnabled && listener!=null && listener.Connected)
+            if (!TwitchAPI.IntegrationEnabled && listener!=null && listener.Connected)
             {
-                TwitchAPI.integrationEnabled = true;
+                TwitchAPI.IntegrationEnabled = true;
             }
             else
             {
-                TwitchAPI.integrationEnabled = false;
+                TwitchAPI.IntegrationEnabled = false;
             }
             TwitchAPI.LogActiveStatus();
         }
@@ -131,24 +131,41 @@ namespace TwitchAPI
             {
                 TwitchAPI.listener.StopListening();
             }
-            TwitchAPI.integrationEnabled = false;
+            TwitchAPI.IntegrationEnabled = false;
         }
         // fancy little status logger stolen from kyle. thanks kyle (:
         public static void LogActiveStatus()
         {
-            string color = TwitchAPI.integrationEnabled ? "<color=#00FF00FF>" : "<color=#FF0000FF>";
-            string text = TwitchAPI.integrationEnabled ? "enabled" : "disabled";
+            string color = TwitchAPI.IntegrationEnabled ? "<color=#00FF00FF>" : "<color=#FF0000FF>";
+            string text = TwitchAPI.IntegrationEnabled ? "enabled" : "disabled";
             ETGModConsole.Log("TwitchAPI " + color + text + "</color>", false);
         }
 
         public static ChatListener.ChatDelegate GlobalChatDelegate;
+        public delegate void ToggleStatusNotification(bool status);
+        public static ToggleStatusNotification GlobalToggleStatusNotification;
 
+        static void ActivationNotification(bool status)
+        {
+
+        }
         static void ActivateGlobalOnChatMessageDelegate(string user, string message, string channel)
         {
-            if(integrationEnabled) 
+            if(IntegrationEnabled) 
                 GlobalChatDelegate(user, message, channel);
         }
-        public static bool integrationEnabled = false;
+        private static bool integrationEnabled = false;
+        public static bool IntegrationEnabled
+        {
+            get { return IntegrationEnabled; }
+            set
+            {
+                IntegrationEnabled = value;
+                GlobalToggleStatusNotification(value);
+            }
+        }
+
+
         public static bool hasBeenStarted = false;
 
         public static ChatListener listener = null;
