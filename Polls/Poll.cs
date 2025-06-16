@@ -61,7 +61,7 @@ namespace TwitchAPI.Polls
         // <summary>Creates an instnace of a poll</summary>
         /// <param name="diplayText"> Text appearing in the vote option</param>
         /// <param name="callBack">callBack for a specific vote. Will cause action when vote wins, and correct setting is selected." </param>
-        /// <param name="options">A list of all the options chat may vote for. By default only the first 4 options will be used. Additional options will not appear.</param>
+        /// <param name="options">A list of all the options chat may vote for. By default only the first 5 options will be used. Additional options will not appear.</param>
         public VoteOption(string displayText, Action<VoteOption> callBack = null)
         {
             this.displayText = displayText;
