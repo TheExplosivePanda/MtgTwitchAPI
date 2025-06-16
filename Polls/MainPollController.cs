@@ -148,7 +148,6 @@ namespace TwitchAPI.Polls
         private bool VerifyPoll(Poll poll) 
         {
             if (poll == null) return false;
-            if (poll.callBack == null) return false;
             if (poll.options == null || poll.options.Count <= 0)
                 return false;
             for (int i = 0; i < poll.options.Count; i++) 
