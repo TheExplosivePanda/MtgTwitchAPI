@@ -165,7 +165,7 @@ namespace TwitchAPI.Polls
                 poll.time = 120;
             if (poll.time < 1)
                 poll.time = 1;
-            while (poll.options.Count >=4) { poll.options.RemoveAt(poll.options.Count - 1); }
+            while (poll.options.Count > 4) { poll.options.RemoveAt(poll.options.Count - 1); }
             foreach (var option in poll.options) 
             {
                 option.votes = 0;
