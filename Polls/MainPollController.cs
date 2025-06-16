@@ -92,7 +92,7 @@ namespace TwitchAPI.Polls
             List<VoteOption> winningVotes = FindWinningVotes(poll);
             ResolvePoll(poll, winningVotes);
         }
-        List<VoteOption> FindWinningVotes(Poll poll)
+        static public List<VoteOption> FindWinningVotes(Poll poll)
         {
             List <VoteOption> winningVotes = new List<VoteOption>();
             int highestVote = 0;

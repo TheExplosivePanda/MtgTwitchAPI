@@ -50,7 +50,7 @@ namespace TwitchAPI
         }
         public void DebugTapi(string[] args)
         {
-            ui.panelOut = !ui.panelOut;
+            
         }
         public static void Log(string text, string color = "#FFFFFF")
         {
@@ -157,10 +157,10 @@ namespace TwitchAPI
         private static bool integrationEnabled = false;
         public static bool IntegrationEnabled
         {
-            get { return IntegrationEnabled; }
+            get { return integrationEnabled; }
             set
             {
-                IntegrationEnabled = value;
+                integrationEnabled = value;
                 GlobalToggleStatusNotification(value);
             }
         }
