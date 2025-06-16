@@ -39,6 +39,7 @@ namespace TwitchAPI.Polls
             this.resolveSettings = poll.resolveSettings;
             this.name = poll.name;
             this.callBack = poll.callBack;
+            this.title = poll.title;
         }
         public void CallBack()
         {
