@@ -169,6 +169,7 @@ namespace TwitchAPI.Polls
             while (poll.options.Count >=4) { poll.options.RemoveAt(poll.options.Count - 1); }
             foreach (var option in poll.options) 
             {
+                option.votes = 0;
                 option.displayText.Replace(Environment.NewLine, "");
                 if (option.displayText.Length >= 50)
                 {
