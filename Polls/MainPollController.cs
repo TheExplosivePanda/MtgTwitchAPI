@@ -25,15 +25,15 @@ namespace TwitchAPI.Polls
 
         void Update()
         {
-            if (pollQueue.Count > 0 && downTimer <= 0 && !isPollActive && TwitchAPI.IntegrationEnabled && !GameManager.Instance.IsFoyer && GameManager.Instance.PrimaryPlayer)
+            if (pollQueue.Count > 0 && downTimer <= 0 && !isPollActive && TwitchAPI.IntegrationEnabled && !GameManager.Instance.IsFoyer && GameManager.Instance.PrimaryPlayer && !GameManager.Instance.IsPaused)
             {
                 ActivatePoll(pollQueue.Dequeue());
             }
-            if (!isPollActive && downTimer >= 0)
+            if (!isPollActive && downTimer >= 0 && !GameManager.Instance.IsPaused)
             {
                 downTimer -= Time.unscaledDeltaTime;
             }
-            if (isPollActive)
+            if (isPollActive && !GameManager.Instance.IsPaused)
             {
                 pollTimer -= Time.unscaledDeltaTime;
                 if (pollTimer + 1 < pollTimerInt)
@@ -56,7 +56,7 @@ namespace TwitchAPI.Polls
 
         void ChatListener(string user,string message,string channel)
         {
-            if (isPollActive) 
+            if (isPollActive && !GameManager.Instance.IsPaused) 
             {
                 int voteIndex = 0;
                 if(int.TryParse(message, out voteIndex) && !Voters.ContainsKey(user))
