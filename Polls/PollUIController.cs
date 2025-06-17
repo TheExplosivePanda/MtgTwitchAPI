@@ -127,6 +127,9 @@ namespace TwitchAPI.Polls
             if (!flag)
             {
                 string text = "\n";
+                var count = itemLabel.Text.Count(x => x == '\n');
+                if (count - votes.Length >1 ) { text += '\n'; }
+
                 for (int i = 0; i < votes.Length; i++)
                 {
                     text += string.Format("[{0}] .\n", votes[i].votes);

@@ -20,7 +20,7 @@ namespace TwitchAPI
     {
         public const string GUID = "panda.etg.twitchAPI";
         public const string NAME = "TWITCHAPI";
-        public const string VERSION = "1.1.5";
+        public const string VERSION = "1.1.7";
         public const string TEXT_COLOR = "#6441a5";
 
         public void Start()
